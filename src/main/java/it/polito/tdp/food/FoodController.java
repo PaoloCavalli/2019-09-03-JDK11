@@ -5,7 +5,11 @@
 package it.polito.tdp.food;
 
 import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 import java.util.ResourceBundle;
+
+import it.polito.tdp.food.model.Adiacenza;
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -40,7 +44,7 @@ public class FoodController {
     private Button btnCammino; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxPorzioni"
-    private ComboBox<?> boxPorzioni; // Value injected by FXMLLoader
+    private ComboBox<String> boxPorzioni; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -54,14 +58,46 @@ public class FoodController {
     @FXML
     void doCorrelate(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Cerco porzioni correlate...");
+        
+    	Integer calorie;
+    	
+    	try {
+    		calorie = Integer.parseInt(this.txtCalorie.getText());
+    		
+    	}catch (NumberFormatException e) {
+    		txtResult.appendText("Inserisci un numero valido di calorie!");
+    	    return;
+    	}
+        List<Adiacenza> adiacenze = this.model.getAdiacenze(calorie);
+    	
+    	if(adiacenze == null) {
+    		txtResult.appendText("Devi prima creare il grafo!");
+    		return;
+    	}
+    	Collections.sort(adiacenze);
+    	for(Adiacenza a : adiacenze) {
+    		txtResult.appendText(String.format("(%s,%s) = %d\n",a.getP1() ,a.getP2() , a.getPeso()));
+    	}
     	
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Creazione grafo...");
+    	Integer calorie;
+    	
+    	try {
+    		calorie = Integer.parseInt(this.txtCalorie.getText());
+    		
+    	}catch (NumberFormatException e) {
+    		txtResult.appendText("Inserisci un numero valido di calorie!");
+    	    return;
+    	}
+    	this.model.creaGrafo(calorie);
+    	txtResult.appendText(String.format("Grafo creato con %d vertici e %d archi", this.model.nVertici(), this.model.nArchi()));
+    	
+    	
+    	this.boxPorzioni.getItems().addAll(this.model.getPorzioni(calorie));
     	
     }
 
@@ -79,5 +115,6 @@ public class FoodController {
     
     public void setModel(Model model) {
     	this.model = model;
+    
     }
 }

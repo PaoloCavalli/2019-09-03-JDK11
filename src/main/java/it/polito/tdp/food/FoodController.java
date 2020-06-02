@@ -5,11 +5,11 @@
 package it.polito.tdp.food;
 
 import java.net.URL;
-import java.util.Collections;
+
 import java.util.List;
 import java.util.ResourceBundle;
 
-import it.polito.tdp.food.model.Adiacenza;
+
 import it.polito.tdp.food.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -59,24 +59,21 @@ public class FoodController {
     void doCorrelate(ActionEvent event) {
     	txtResult.clear();
         
-    	Integer calorie;
-    	
+    	String sorgente = this.boxPorzioni.getSelectionModel().getSelectedItem();
+    	if (sorgente == null) {
+    		txtResult.setText("Seleziona una porzione");
+    	}
+
     	try {
-    		calorie = Integer.parseInt(this.txtCalorie.getText());
+    		List<String> connessi = this.model.getNodiConnessi(sorgente);
     		
-    	}catch (NumberFormatException e) {
-    		txtResult.appendText("Inserisci un numero valido di calorie!");
-    	    return;
-    	}
-        List<Adiacenza> adiacenze = this.model.getAdiacenze(calorie);
+    		for(String s : connessi) {
+    			txtResult.appendText(String.format("%s  \n", s));
+    		}
+    		
+    	} catch (RuntimeException e) {
     	
-    	if(adiacenze == null) {
-    		txtResult.appendText("Devi prima creare il grafo!");
-    		return;
-    	}
-    	Collections.sort(adiacenze);
-    	for(Adiacenza a : adiacenze) {
-    		txtResult.appendText(String.format("(%s,%s) = %d\n",a.getP1() ,a.getP2() , a.getPeso()));
+    		txtResult.setText("La porzione selezionata non è nel grafo ");
     	}
     	
     }

@@ -1,12 +1,15 @@
 package it.polito.tdp.food.model;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
 
 import it.polito.tdp.food.db.FoodDao;
 
@@ -42,6 +45,18 @@ public class Model {
 		}
 		System.out.println(String.format("Grafo creato con %d vertici e %d archi", this.grafo.vertexSet().size(), this.grafo.edgeSet().size()));
 	}
+	//Manca il peso
+    public List<String> getNodiConnessi(String sorgente){
+		
+		List<String> nodiVisitati = new LinkedList<>(); 
+		GraphIterator<String, DefaultWeightedEdge> dfv = new DepthFirstIterator<>(grafo,sorgente);
+		while (dfv.hasNext()) {
+			
+			nodiVisitati.add(dfv.next());
+		}
+		return nodiVisitati;
+	}
+
 	
 	public int nVertici() {
 		return	this.grafo.vertexSet().size();

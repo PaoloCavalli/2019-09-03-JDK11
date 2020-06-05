@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 
 
 import it.polito.tdp.food.model.Model;
+import it.polito.tdp.food.model.StringAndNumber;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -52,7 +53,28 @@ public class FoodController {
     @FXML
     void doCammino(ActionEvent event) {
     	txtResult.clear();
-    	txtResult.appendText("Cerco cammino peso massimo...");
+    	
+    	String sorgente = this.boxPorzioni.getSelectionModel().getSelectedItem();
+    	if (sorgente == null) {
+    		txtResult.setText("Seleziona una porzione");
+    	}
+        
+    	Integer passi;
+    	
+    	try {
+    		passi = Integer.parseInt(this.txtPassi.getText());
+    		
+    	}catch (NumberFormatException e) {
+    		txtResult.appendText("Inserisci un numero valido di calorie!");
+    	    return;
+    	}
+    	List<String> camminoMax = this.model.trovaCammino(sorgente, passi);
+    	Integer peso  =  this.model.peso(camminoMax);
+    	for(String s: camminoMax) {
+    		txtResult.appendText(s +"\n");
+    	}
+    	txtResult.appendText(String.format("Somma dei pesi del cammino : %d", peso));
+    	
     }
 
     @FXML
@@ -65,10 +87,10 @@ public class FoodController {
     	}
 
     	try {
-    		List<String> connessi = this.model.getNodiConnessi(sorgente);
+    		List<StringAndNumber> connessi = this.model.getNodiConnessi(sorgente);
     		
-    		for(String s : connessi) {
-    			txtResult.appendText(String.format("%s  \n", s));
+    		for(StringAndNumber s : connessi) {
+    			txtResult.appendText(s.toString() +"\n");
     		}
     		
     	} catch (RuntimeException e) {
